@@ -7,6 +7,8 @@ app = Flask(__name__)
 
 # camera = cv2.VideoCapture('rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream')
 # camera = cv2.VideoCapture(0)
+
+
 def gstreamer_pipeline(
     capture_width=1280,
     capture_height=720,
@@ -34,7 +36,9 @@ def gstreamer_pipeline(
         )
     )
 
+
 camera = cv2.VideoCapture(gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
+
 
 def gen_frames():  # generate frame by frame from camera
     while True:
@@ -43,9 +47,10 @@ def gen_frames():  # generate frame by frame from camera
         if not success:
             break
         else:
-			return_key, encoded_image = cv2.imencode(".jpg", frame)
-			yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
-              bytearray(encoded_image) + b'\r\n')
+            return_key, encoded_image = cv2.imencode(".jpg", frame)
+            yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+                  bytearray(encoded_image) + b'\r\n')
+
 
 @app.route('/video_feed')
 def video_feed():
