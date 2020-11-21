@@ -20,10 +20,10 @@ std::string gstreamer_pipeline (int capture_width, int capture_height, int displ
 
 int main()
 {
-    int capture_width = 1280 ;
-    int capture_height = 720 ;
-    int display_width = 1280 ;
-    int display_height = 720 ;
+    int capture_width = 640 ;
+    int capture_height = 360 ;
+    int display_width = 640 ;
+    int display_height = 360 ;
     int framerate = 60 ;
     int flip_method = 0 ;
 
