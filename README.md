@@ -1,4 +1,23 @@
 # CSI-Camera
+
+## Modes
+
+```
+GST_ARGUS: Available Sensor modes :
+GST_ARGUS: 3264 x 2464 FR = 21.000000 fps Duration = 47619048 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: 3264 x 1848 FR = 28.000001 fps Duration = 35714284 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: 1920 x 1080 FR = 29.999999 fps Duration = 33333334 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: 1640 x 1232 FR = 29.999999 fps Duration = 33333334 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: 1280 x 720 FR = 59.999999 fps Duration = 16666667 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: 1280 x 720 FR = 120.000005 fps Duration = 8333333 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+```
+
 Simple example of using a MIPI-CSI(2) Camera (like the Raspberry Pi Version 2 camera) with the NVIDIA Jetson Nano Developer Kit. This is support code for the article on JetsonHacks: https://wp.me/p7ZgI9-19v
 
 The camera should be installed in the MIPI-CSI Camera Connector on the carrier board. The pins on the camera ribbon should face the Jetson Nano module, the stripe faces outward.
@@ -68,11 +87,25 @@ $ ./simple_camera
 
 For this Jetson image, the above `g++` command doesn't work.
 
+### Solution 1
+
 ```
-$ g++ -std=c++11 -Wall -I <> <source_file.cpp> -L <> -l <> -l <> -l <> -o <output_file>
+g++ -std=c++11 -Wall -I/usr/include/opencv4 simple_camera.cpp -L/usr/include -lopencv_core -lopencv_highgui -lopencv_videoio -o simple_camera
+
 ```
 
-### Solution
+**g++**
+
+* -g - turn on debugging (so GDB gives more friendly output)
+* -Wall - turns on most warnings
+* -O or -O2 - turn on optimizations
+* -o <name> - name of the output file
+* -c - output an object file (.o)
+* -I<include path> - specify an include directory
+* -L<library path> - specify a lib directory
+* -l<library> - link with library lib<library>.a
+
+### Solution 2
 
 * Added `CMakeLists.txt` File with following;
 	``` 
