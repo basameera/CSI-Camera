@@ -8,11 +8,12 @@ global video_frame
 video_frame = None
 
 # Use locks for thread-safe viewing of frames in multiple browsers
-global thread_lock 
+global thread_lock
 thread_lock = threading.Lock()
 
 # GStreamer Pipeline to access the Raspberry Pi camera
 GSTREAMER_PIPELINE = 'nvarguscamerasrc ! video/x-raw(memory:NVMM), width=3280, height=2464, format=(string)NV12, framerate=21/1 ! nvvidconv flip-method=0 ! video/x-raw, width=960, height=616, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink wait-on-eos=false max-buffers=1 drop=True'
+
 
 def gstreamer_pipeline(
     capture_width=1280,
@@ -41,17 +42,20 @@ def gstreamer_pipeline(
         )
     )
 
-#print(gstreamer_pipeline(flip_method=0))
+# print(gstreamer_pipeline(flip_method=0))
+
 
 # Create the Flask object for the application
 app = Flask(__name__)
+
 
 def captureFrames():
     global video_frame, thread_lock
 
     # Video capturing from OpenCV
     #video_capture = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
-	video_capture = cv2.VideoCapture(gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
+    video_capture = cv2.VideoCapture(
+        gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
 
     while True and video_capture.isOpened():
         return_key, frame = video_capture.read()
@@ -62,13 +66,14 @@ def captureFrames():
         # with thread safe access
         with thread_lock:
             video_frame = frame.copy()
-        
+
         key = cv2.waitKey(30) & 0xff
-        if key == 27: ## Esc key to stop
+        if key == 27:  # Esc key to stop
             break
 
     video_capture.release()
-        
+
+
 def encodeFrame():
     global thread_lock
     while True:
@@ -82,12 +87,14 @@ def encodeFrame():
                 continue
 
         # Output image as a byte array
-        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
-            bytearray(encoded_image) + b'\r\n')
+        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+              bytearray(encoded_image) + b'\r\n')
+
 
 @app.route("/")
 def streamFrames():
-    return Response(encodeFrame(), mimetype = "multipart/x-mixed-replace; boundary=frame")
+    return Response(encodeFrame(), mimetype="multipart/x-mixed-replace; boundary=frame")
+
 
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
@@ -101,5 +108,5 @@ if __name__ == '__main__':
 
     # start the Flask Web Application
     # While it can be run on any feasible IP, IP = 0.0.0.0 renders the web app on
-    # the host machine's localhost and is discoverable by other machines on the same network 
+    # the host machine's localhost and is discoverable by other machines on the same network
     app.run("0.0.0.0", port="8000")
