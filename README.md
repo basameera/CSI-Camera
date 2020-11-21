@@ -62,6 +62,36 @@ $ g++ -std=c++11 -Wall -I/usr/lib/opencv simple_camera.cpp -L/usr/lib -lopencv_c
 $ ./simple_camera
 ```
 
+**NOTE**
+
+![alt text](jetson.png "title")
+
+For this Jetson image, the above `g++` command doesn't work.
+
+```
+$ g++ -std=c++11 -Wall -I <> <source_file.cpp> -L <> -l <> -l <> -l <> -o <output_file>
+```
+
+### Solution
+
+* Added `CMakeLists.txt` File with following;
+	``` 
+	cmake_minimum_required(VERSION 2.8)
+	project( simple_camera )
+	find_package( OpenCV REQUIRED )
+	include_directories( ${OpenCV_INCLUDE_DIRS} )
+	add_executable( simple_camera simple_camera.cpp )
+	target_link_libraries( simple_camera ${OpenCV_LIBS} )
+	```
+* Compile using following;
+	```
+	cmake .
+	make
+	```
+* Run - `./simple_camera`
+
+---
+
 The final example is dual_camera.py. This example is for the newer rev B01 of the Jetson Nano board, identifiable by two CSI-MIPI camera ports. This is a simple Python program which reads both CSI cameras and displays them in a window. The window is 960x1080. For performance, the script uses a separate thread for reading each camera image stream. To run the script:
 
 ```
